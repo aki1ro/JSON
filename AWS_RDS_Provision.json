@@ -1,0 +1,387 @@
+MomPopCafeInstance Instance ID: i-0ff880569fe56506e
+MomPopCafeInstance Instance Type: t2.small
+MomPopCafeInstance Public DNS Name: ec2-3-85-172-65.compute-1.amazonaws.com
+MomPopCafeInstance Public IP Address: 3.85.172.65
+MomPopCafeInstance Availability Zone: us-east-1a
+MomPopCafeInstance VPC ID: vpc-0cf73ae8d76046766
+MomPopCafeSecurityGroup Group ID: sg-05fc2e85a93785409
+MomPopCafe VPC IPv4 CIDR block: 10.200.0.0/20
+MomPopCafe Public Subnet 1 Subnet ID: subnet-0b5868bc32efb6793
+MomPopCafe Public Subnet 1 IPv4 CIDR block: 10.200.0.0/24
+List of Availability Zones in the region: us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f
+Number of orders: 3
+MomPopCafeDatabaseSG Group ID: sg-03ae9814e793b35c5
+MomPopCafe Private Subnet 1 ID: subnet-09338b523da6c5b34
+MomPopCafe Private Subnet 2 ID: subnet-071c36a7e680a3f0a
+RDS Instance Database Endpoint Address: mompopcafedbinstance.cx8ogtyhbiek.us-east-1.rds.amazonaws.com
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\nicke> ssh -i C:\users\nicke\downloads\labsuser.pem ec2-user@54.196.250.162
+The authenticity of host '54.196.250.162 (54.196.250.162)' can't be established.
+ECDSA key fingerprint is SHA256:n+tnViK60Pz1hcUaIt4Ft6O9zz1/snWw9zbQ4aM8MbU.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '54.196.250.162' (ECDSA) to the list of known hosts.
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+[ec2-user@ip-10-200-0-59 ~]$ aws configure
+AWS Access Key ID [None]: AKIA5TNYWIBZCQZ7CZ7V
+AWS Secret Access Key [None]: 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
+Default region name [None]: us-east-1
+Default output format [None]: json
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-instances --filters "Name=tag:Name,Values= MomPop^C
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-instances \
+> --filters "Name=tag:Name,Values= MomPopCafeInstance" \
+> --query "Reservations[*].Instances[*].[InstanceId,InstanceType,PublicDnsName,PublicIpAddress,Placement.AvailabilityZone,VpcId,SecurityGroups[*].GroupId]"
+[
+    [
+        [
+            "i-0ff880569fe56506e",
+            "t2.small",
+            "ec2-3-85-172-65.compute-1.amazonaws.com",
+            "3.85.172.65",
+            "us-east-1a",
+            "vpc-0cf73ae8d76046766",
+            [
+                "sg-05fc2e85a93785409"
+            ]
+        ]
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-vpcs --vpc-ids <MomPopCafeInstance VPC ID> \
+> --filters "Name=tag:Name,Values= MomPopCafe VPC" \
+> --query "Vpcs[*].CidrBlock"
+-bash: MomPopCafeInstance: No such file or directory
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-vpcs --vpc-ids <MomPopCafeInstance VPC ID> --filters "Name=tag:Name,Values= ^CmPopCafe VPC" --query "Vpcs[*].CidrBlock"^
+[[D
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-vpcs --vpc-ids vpc-0cf73ae8d76046766 \
+> --filters "Name=tag:Name,Values= MomPopCafe VPC" \
+> --query "Vpcs[*].CidrBlock"
+[
+    "10.200.0.0/20"
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-subnets \
+> --filters "Name=vpc-id,Values=vpc-0cf73ae8d76046766" \
+> --query "Subnets[*].[SubnetId,CidrBlock]"
+[
+    [
+        "subnet-0b5868bc32efb6793",
+        "10.200.0.0/24"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-availability-zones \
+> --filters "Name=region-name,Values=us-east-1a" \
+> --query "AvailabilityZones[*].ZoneName"
+[]
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-availability-zones --filters "Name=region-name,Values=us-east-1" --query "AvailabilityZones[*].ZoneName"
+[
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 create-security-group \
+> --group-name MomPopCafeDatabaseSG \
+> --description "Security group for Mom Pop Cafe database" \
+> --vpc-id vpc-0cf73ae8d76046766
+{
+    "GroupId": "sg-03ae9814e793b35c5"
+}
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 authorize-security-group-ingress \
+> --group-id sg-03ae9814e793b35c5 \
+> --protocol tcp --port 3306 \
+> --source-group sg-05fc2e85a93785409
+
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 authorize-security-group-ingress \
+> --group-id sg-03ae9814e793b35c5 \
+> --protocol tcp --port 3306 \
+> --source-group sg-05fc2e85a93785409
+
+
+An error occurred (InvalidPermission.Duplicate) when calling the AuthorizeSecurityGroupIngress operation: the specified rule "peer: sg-05fc2e85a93785409, TCP, from port: 3306, to port: 3306, ALLOW" already exists
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 describe-security-groups \
+> --query "SecurityGroups[*].[GroupName,GroupId,IpPermissions]" \
+> --filters "Name=group-name,Values='MomPopCafeDatabaseSG'"
+[
+    [
+        "MomPopCafeDatabaseSG",
+        "sg-03ae9814e793b35c5",
+        [
+            {
+                "PrefixListIds": [],
+                "FromPort": 3306,
+                "IpRanges": [],
+                "ToPort": 3306,
+                "IpProtocol": "tcp",
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "935079592050",
+                        "GroupId": "sg-05fc2e85a93785409"
+                    }
+                ],
+                "Ipv6Ranges": []
+            }
+        ]
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 create-subnet \
+> --vpc-id vpc-0cf73ae8d76046766 \
+> --cidr-block 10.200.2.0/23 \
+> --availability-zone us-east-1a
+{
+    "Subnet": {
+        "MapPublicIpOnLaunch": false,
+        "AvailabilityZoneId": "use1-az2",
+        "AvailableIpAddressCount": 507,
+        "DefaultForAz": false,
+        "SubnetArn": "arn:aws:ec2:us-east-1:935079592050:subnet/subnet-09338b523da6c5b34",
+        "Ipv6CidrBlockAssociationSet": [],
+        "VpcId": "vpc-0cf73ae8d76046766",
+        "State": "available",
+        "AvailabilityZone": "us-east-1a",
+        "SubnetId": "subnet-09338b523da6c5b34",
+        "OwnerId": "935079592050",
+        "CidrBlock": "10.200.2.0/23",
+        "AssignIpv6AddressOnCreation": false
+    }
+}
+[ec2-user@ip-10-200-0-59 ~]$ aws ec2 create-subnet \
+> --vpc-id vpc-0cf73ae8d76046766 \
+> --cidr-block 10.200.10.0/23 \
+> --availability-zone us-east-1b
+{
+    "Subnet": {
+        "MapPublicIpOnLaunch": false,
+        "AvailabilityZoneId": "use1-az4",
+        "AvailableIpAddressCount": 507,
+        "DefaultForAz": false,
+        "SubnetArn": "arn:aws:ec2:us-east-1:935079592050:subnet/subnet-071c36a7e680a3f0a",
+        "Ipv6CidrBlockAssociationSet": [],
+        "VpcId": "vpc-0cf73ae8d76046766",
+        "State": "available",
+        "AvailabilityZone": "us-east-1b",
+        "SubnetId": "subnet-071c36a7e680a3f0a",
+        "OwnerId": "935079592050",
+        "CidrBlock": "10.200.10.0/23",
+        "AssignIpv6AddressOnCreation": false
+    }
+}
+[ec2-user@ip-10-200-0-59 ~]$ aws rds create-db-subnet-group \
+> --db-subnet-group-name "MomPopCafeDB Subnet Group" \
+> --db-subnet-group-description "DB subnet group for Mom & Pop Cafe" \
+> --subnet-ids subnet-09338b523da6c5b34 subnet-071c36a7e680a3f0a \
+> --tags "Key=Name,Value= MomPopCafeDatabaseSubnetGroup"
+
+{
+    "DBSubnetGroup": {
+        "Subnets": [
+            {
+                "SubnetStatus": "Active",
+                "SubnetIdentifier": "subnet-071c36a7e680a3f0a",
+                "SubnetOutpost": {},
+                "SubnetAvailabilityZone": {
+                    "Name": "us-east-1b"
+                }
+            },
+            {
+                "SubnetStatus": "Active",
+                "SubnetIdentifier": "subnet-09338b523da6c5b34",
+                "SubnetOutpost": {},
+                "SubnetAvailabilityZone": {
+                    "Name": "us-east-1a"
+                }
+            }
+        ],
+        "VpcId": "vpc-0cf73ae8d76046766",
+        "DBSubnetGroupDescription": "DB subnet group for Mom & Pop Cafe",
+        "SubnetGroupStatus": "Complete",
+        "DBSubnetGroupArn": "arn:aws:rds:us-east-1:935079592050:subgrp:mompopcafedb subnet group",
+        "DBSubnetGroupName": "mompopcafedb subnet group"
+    }
+}
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws rds create-db-instance \
+> --db-instance-identifier MomPopCafeDBInstance \
+> --engine mariadb \
+> --engine-version 10.2.11 \
+> --db-instance-class db.t2.micro \
+> --allocated-storage 20 \
+> --availability-zone us-east-1a \
+> --db-subnet-group-name "MomPopCafeDB Subnet Group" \
+> --vpc-security-group-ids sg-03ae9814e793b35c5 \
+> --no-publicly-accessible \
+> --master-username root --master-user-password 'Re:Start!9'
+{
+    "DBInstance": {
+        "PubliclyAccessible": false,
+        "MasterUsername": "root",
+        "MonitoringInterval": 0,
+        "LicenseModel": "general-public-license",
+        "VpcSecurityGroups": [
+            {
+                "Status": "active",
+                "VpcSecurityGroupId": "sg-03ae9814e793b35c5"
+            }
+        ],
+        "CopyTagsToSnapshot": false,
+        "OptionGroupMemberships": [
+            {
+                "Status": "in-sync",
+                "OptionGroupName": "default:mariadb-10-2"
+            }
+        ],
+        "PendingModifiedValues": {
+            "MasterUserPassword": "****"
+        },
+        "Engine": "mariadb",
+        "MultiAZ": false,
+        "DBSecurityGroups": [],
+        "DBParameterGroups": [
+            {
+                "DBParameterGroupName": "default.mariadb10.2",
+                "ParameterApplyStatus": "in-sync"
+            }
+        ],
+        "PerformanceInsightsEnabled": false,
+        "AutoMinorVersionUpgrade": true,
+        "PreferredBackupWindow": "06:40-07:10",
+        "DBSubnetGroup": {
+            "Subnets": [
+                {
+                    "SubnetStatus": "Active",
+                    "SubnetIdentifier": "subnet-071c36a7e680a3f0a",
+                    "SubnetOutpost": {},
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-1b"
+                    }
+                },
+                {
+                    "SubnetStatus": "Active",
+                    "SubnetIdentifier": "subnet-09338b523da6c5b34",
+                    "SubnetOutpost": {},
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-1a"
+                    }
+                }
+            ],
+            "DBSubnetGroupName": "mompopcafedb subnet group",
+            "VpcId": "vpc-0cf73ae8d76046766",
+            "DBSubnetGroupDescription": "DB subnet group for Mom & Pop Cafe",
+            "SubnetGroupStatus": "Complete"
+        },
+        "ReadReplicaDBInstanceIdentifiers": [],
+        "AllocatedStorage": 20,
+        "DBInstanceArn": "arn:aws:rds:us-east-1:935079592050:db:mompopcafedbinstance",
+        "BackupRetentionPeriod": 1,
+        "PreferredMaintenanceWindow": "sun:05:14-sun:05:44",
+        "DBInstanceStatus": "creating",
+        "IAMDatabaseAuthenticationEnabled": false,
+        "EngineVersion": "10.2.11",
+        "DeletionProtection": false,
+        "AvailabilityZone": "us-east-1a",
+        "DomainMemberships": [],
+        "StorageType": "gp2",
+        "DbiResourceId": "db-OOVHGRV3MZI2SMW6GFDLW5LJ7Q",
+        "CACertificateIdentifier": "rds-ca-2019",
+        "StorageEncrypted": false,
+        "AssociatedRoles": [],
+        "DBInstanceClass": "db.t2.micro",
+        "DbInstancePort": 0,
+        "DBInstanceIdentifier": "mompopcafedbinstance"
+    }
+}
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances \
+> --db-instance-identifier MomPopCafeDBInstance \
+> --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        null,
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "creating"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances --db-instance-identifier MomPopCafeDBInstance --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        null,
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "creating"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances --db-instance-identifier MomPopCafeDBInstance --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        null,
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "creating"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances --db-instance-identifier MomPopCafeDBInstance --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        null,
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "creating"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances --db-instance-identifier MomPopCafeDBInstance --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        "mompopcafedbinstance.cx8ogtyhbiek.us-east-1.rds.amazonaws.com",
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "backing-up"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances --db-instance-identifier MomPopCafeDBInstance --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        "mompopcafedbinstance.cx8ogtyhbiek.us-east-1.rds.amazonaws.com",
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "backing-up"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$
+[ec2-user@ip-10-200-0-59 ~]$ aws rds describe-db-instances --db-instance-identifier MomPopCafeDBInstance --query "DBInstances[*].[Endpoint.Address,AvailabilityZone,PreferredBackupWindow,BackupRetentionPeriod,DBInstanceStatus]"
+[
+    [
+        "mompopcafedbinstance.cx8ogtyhbiek.us-east-1.rds.amazonaws.com",
+        "us-east-1a",
+        "06:40-07:10",
+        1,
+        "available"
+    ]
+]
+[ec2-user@ip-10-200-0-59 ~]$

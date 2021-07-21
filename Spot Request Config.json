@@ -1,0 +1,126 @@
+{
+   "IamFleetRole": "arn:aws:iam::644185991690:role/aws-ec2-spot-fleet-tagging-role",
+   "AllocationStrategy": "capacityOptimized",
+   "TargetCapacity": 1,
+   "ValidFrom": "2021-06-20T22:26:47Z",
+   "ValidUntil": "2022-06-20T22:26:47Z",
+   "SpotPrice": "0.175",
+   "TerminateInstancesWithExpiration": true,
+   "LaunchSpecifications": [
+       {
+           "ImageId": "ami-0aeeebd8d2ab47354",
+           "InstanceType": "c1.medium",
+           "SubnetId": "subnet-03894de88dd9cbcd0, subnet-9e61f6af",
+           "KeyName": "keypairaws",
+           "BlockDeviceMappings": [
+               {
+                   "DeviceName": "/dev/xvda",
+                   "Ebs": {
+                       "DeleteOnTermination": true,
+                       "SnapshotId": "snap-02d2a0614e5ce0ce4",
+                       "VolumeSize": 8,
+                       "Encrypted": false,
+                       "VolumeType": "gp2"
+                   }
+               }
+           ],
+           "SpotPrice": "0.13"
+       },
+       {
+           "ImageId": "ami-0aeeebd8d2ab47354",
+           "InstanceType": "t3.medium",
+           "SubnetId": "subnet-03894de88dd9cbcd0, subnet-9e61f6af",
+           "KeyName": "keypairaws",
+           "BlockDeviceMappings": [
+               {
+                   "DeviceName": "/dev/xvda",
+                   "Ebs": {
+                       "DeleteOnTermination": true,
+                       "SnapshotId": "snap-02d2a0614e5ce0ce4",
+                       "VolumeSize": 8,
+                       "Encrypted": false,
+                       "VolumeType": "gp2"
+                   }
+               }
+           ],
+           "SpotPrice": "0.0416"
+       },
+       {
+           "ImageId": "ami-0aeeebd8d2ab47354",
+           "InstanceType": "t2.medium",
+           "SubnetId": "subnet-03894de88dd9cbcd0, subnet-9e61f6af",
+           "KeyName": "keypairaws",
+           "BlockDeviceMappings": [
+               {
+                   "DeviceName": "/dev/xvda",
+                   "Ebs": {
+                       "DeleteOnTermination": true,
+                       "SnapshotId": "snap-02d2a0614e5ce0ce4",
+                       "VolumeSize": 8,
+                       "Encrypted": false,
+                       "VolumeType": "gp2"
+                   }
+               }
+           ],
+           "SpotPrice": "0.0464"
+       },
+       {
+           "ImageId": "ami-0aeeebd8d2ab47354",
+           "InstanceType": "t3a.medium",
+           "SubnetId": "subnet-03894de88dd9cbcd0, subnet-9e61f6af",
+           "KeyName": "keypairaws",
+           "BlockDeviceMappings": [
+               {
+                   "DeviceName": "/dev/xvda",
+                   "Ebs": {
+                       "DeleteOnTermination": true,
+                       "SnapshotId": "snap-02d2a0614e5ce0ce4",
+                       "VolumeSize": 8,
+                       "Encrypted": false,
+                       "VolumeType": "gp2"
+                   }
+               }
+           ],
+           "SpotPrice": "0.0376"
+       },
+       {
+           "ImageId": "ami-0aeeebd8d2ab47354",
+           "InstanceType": "m1.large",
+           "SubnetId": "subnet-03894de88dd9cbcd0, subnet-9e61f6af",
+           "KeyName": "keypairaws",
+           "BlockDeviceMappings": [
+               {
+                   "DeviceName": "/dev/xvda",
+                   "Ebs": {
+                       "DeleteOnTermination": true,
+                       "SnapshotId": "snap-02d2a0614e5ce0ce4",
+                       "VolumeSize": 8,
+                       "Encrypted": false,
+                       "VolumeType": "gp2"
+                   }
+               }
+           ],
+           "SpotPrice": "0.175"
+       },
+       {
+           "ImageId": "ami-0aeeebd8d2ab47354",
+           "InstanceType": "t3.small",
+           "SubnetId": "subnet-03894de88dd9cbcd0, subnet-9e61f6af",
+           "KeyName": "keypairaws",
+           "BlockDeviceMappings": [
+               {
+                   "DeviceName": "/dev/xvda",
+                   "Ebs": {
+                       "DeleteOnTermination": true,
+                       "SnapshotId": "snap-02d2a0614e5ce0ce4",
+                       "VolumeSize": 8,
+                       "Encrypted": false,
+                       "VolumeType": "gp2"
+                   }
+               }
+           ],
+           "SpotPrice": "0.0208"
+       }
+   ],
+   "Type": "request"
+}

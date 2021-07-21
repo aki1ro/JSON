@@ -1,0 +1,19 @@
+{
+   "Name":"Nick",
+   "Age":27,
+   "Sex":"Male",
+   "isProgrammer":true,
+   "hobbies":["Video games","Riding","Driving","Learning when interested"],
+   "Friends":[{
+    "Name":"Chris",
+    "Age":28,
+    "isCryptoMeister":true,
+    "friends":["friends"] 
+   },
+   {"Name":"Josh",
+    "Age":28,
+    "isCryptoMeister":true,
+    "friends":["friends"]
+   }]
+}
+

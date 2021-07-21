@@ -1,0 +1,352 @@
+{
+   "AWSTemplateFormatVersion": "2010-09-09",
+   "Description": "Lab template",
+   "Parameters": {
+       "LabVpcCidr": {
+           "Type": "String",
+           "Default": "10.0.0.0/20"
+       },
+       "PublicSubnetCidr": {
+           "Type": "String",
+           "Default": "10.0.0.0/24"
+       },
+        "AmazonLinuxAMIID": {
+           "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+           "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+        }
+   },
+   "Resources": {
+       "myS3Bucket" : {
+          "Type" : "AWS::S3::Bucket"
+       },
+       "LabVPC": {
+           "Type": "AWS::EC2::VPC",
+           "Properties": {
+               "CidrBlock": {
+                   "Ref": "LabVpcCidr"
+               },
+               "EnableDnsSupport": true,
+               "EnableDnsHostnames": true,
+               "Tags": [
+                   {
+                       "Key": "Name",
+                       "Value": "Lab VPC"
+                   }
+               ]
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "eb3c9d58-28da-42b4-b9f1-fd1ac7620549"
+               }
+           }
+       },
+       "IGW": {
+           "Type": "AWS::EC2::InternetGateway",
+           "Properties": {
+               "Tags": [
+                   {
+                       "Key": "Name",
+                       "Value": "Lab IGW"
+                   }
+               ]
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "fdeab7e9-ae4d-4f64-a5f3-d8d26cb3369d"
+               }
+           }
+       },
+       "VPCtoIGWConnection": {
+           "Type": "AWS::EC2::VPCGatewayAttachment",
+           "DependsOn": [
+               "IGW",
+               "LabVPC"
+           ],
+           "Properties": {
+               "InternetGatewayId": {
+                   "Ref": "IGW"
+               },
+               "VpcId": {
+                   "Ref": "LabVPC"
+               }
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "0c2ec461-1b48-44d2-8b13-f43692e04216"
+               }
+           }
+       },
+       "PublicRouteTable": {
+           "Type": "AWS::EC2::RouteTable",
+           "DependsOn": "LabVPC",
+           "Properties": {
+               "VpcId": {
+                   "Ref": "LabVPC"
+               },
+               "Tags": [
+                   {
+                       "Key": "Name",
+                       "Value": "Public Route Table"
+                   }
+               ]
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "c6636580-cd4c-478f-94aa-3643264519cc"
+               }
+           }
+       },
+       "PublicRoute": {
+           "Type": "AWS::EC2::Route",
+           "DependsOn": [
+               "PublicRouteTable",
+               "IGW"
+           ],
+           "Properties": {
+               "DestinationCidrBlock": "0.0.0.0/0",
+               "GatewayId": {
+                   "Ref": "IGW"
+               },
+               "RouteTableId": {
+                   "Ref": "PublicRouteTable"
+               }
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "1b59aefc-bf93-47f6-bbe9-62f07430f840"
+               }
+           }
+       },
+       "PublicSubnet": {
+           "Type": "AWS::EC2::Subnet",
+           "DependsOn": "LabVPC",
+           "Properties": {
+               "VpcId": {
+                   "Ref": "LabVPC"
+               },
+               "MapPublicIpOnLaunch": true,
+               "CidrBlock": {
+                   "Ref": "PublicSubnetCidr"
+               },
+               "AvailabilityZone": {
+                   "Fn::Select": [
+                       0,
+                       {
+                           "Fn::GetAZs": {
+                               "Ref": "AWS::Region"
+                           }
+                       }
+                   ]
+               },
+               "Tags": [
+                   {
+                       "Key": "Name",
+                       "Value": "Public Subnet"
+                   }
+               ]
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "f2978eb2-9d1a-4344-8675-8f8465de44a8"
+               }
+           }
+       },
+       "PublicRouteTableAssociation": {
+           "Type": "AWS::EC2::SubnetRouteTableAssociation",
+           "DependsOn": [
+               "PublicRouteTable",
+               "PublicSubnet"
+           ],
+           "Properties": {
+               "RouteTableId": {
+                   "Ref": "PublicRouteTable"
+               },
+               "SubnetId": {
+                   "Ref": "PublicSubnet"
+               }
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "e57442c6-bbe7-41f6-973c-75d671c3fa67"
+               }
+           }
+       },
+       "AppSecurityGroup": {
+           "Type": "AWS::EC2::SecurityGroup",
+           "DependsOn": "LabVPC",
+           "Properties": {
+               "GroupName": "App",
+               "GroupDescription": "Enable access to App",
+               "VpcId": {
+                   "Ref": "LabVPC"
+               },
+               "SecurityGroupIngress": [
+                   {
+                       "IpProtocol": "tcp",
+                       "FromPort": 80,
+                       "ToPort": 80,
+                       "CidrIp": "0.0.0.0/0"
+                   }
+               ],
+               "Tags": [
+                   {
+                       "Key": "Name",
+                       "Value": "App"
+                   }
+               ]
+           },
+           "Metadata": {
+               "AWS::CloudFormation::Designer": {
+                   "id": "e149ef59-49ff-433f-97fe-72b4e93d5e91"
+               }
+           }
+       },
+       "MyEC2Instance" : {
+         "Type" : "AWS::EC2::Instance",
+         "Properties" : {
+           "ImageId" : {
+              "Ref" : "AmazonLinuxAMIID"
+           },
+           "InstanceType" : "t2.micro",
+           "SecurityGroupIds" : [
+              {
+              "Ref" : "AppSecurityGroup"
+           }
+         ],
+           "SubnetId" : {
+              "Ref" : "PublicSubnet"
+           },
+           "Tags" : [
+              {
+              "Key" : "Name",
+              "Value" : "App Server"
+           }
+         ]
+         }
+      }
+   },
+   "Outputs": {
+       "LabVPCDefaultSecurityGroup": {
+           "Value": {
+               "Fn::Sub": "${LabVPC.DefaultSecurityGroup}"
+           }
+       }
+   },
+   "Metadata": {
+       "AWS::CloudFormation::Designer": {
+           "fdeab7e9-ae4d-4f64-a5f3-d8d26cb3369d": {
+               "size": {
+                   "width": 60,
+                   "height": 60
+               },
+               "position": {
+                   "x": 60,
+                   "y": 660
+               },
+               "z": 1,
+               "embeds": []
+           },
+           "eb3c9d58-28da-42b4-b9f1-fd1ac7620549": {
+               "size": {
+                   "width": 600,
+                   "height": 510
+               },
+               "position": {
+                   "x": 60,
+                   "y": 90
+               },
+               "z": 1,
+               "embeds": [
+                   "e149ef59-49ff-433f-97fe-72b4e93d5e91",
+                   "f2978eb2-9d1a-4344-8675-8f8465de44a8",
+                   "c6636580-cd4c-478f-94aa-3643264519cc"
+               ]
+           },
+           "e149ef59-49ff-433f-97fe-72b4e93d5e91": {
+               "size": {
+                   "width": 60,
+                   "height": 60
+               },
+               "position": {
+                   "x": 390,
+                   "y": 360
+               },
+               "z": 2,
+               "parent": "eb3c9d58-28da-42b4-b9f1-fd1ac7620549",
+               "embeds": [],
+               "dependson": [
+                   "eb3c9d58-28da-42b4-b9f1-fd1ac7620549"
+               ]
+           },
+           "f2978eb2-9d1a-4344-8675-8f8465de44a8": {
+               "size": {
+                   "width": 150,
+                   "height": 150
+               },
+               "position": {
+                   "x": 390,
+                   "y": 150
+               },
+               "z": 2,
+               "parent": "eb3c9d58-28da-42b4-b9f1-fd1ac7620549",
+               "embeds": [],
+               "dependson": [
+                   "eb3c9d58-28da-42b4-b9f1-fd1ac7620549"
+               ]
+           },
+           "c6636580-cd4c-478f-94aa-3643264519cc": {
+               "size": {
+                   "width": 240,
+                   "height": 240
+               },
+               "position": {
+                   "x": 90,
+                   "y": 150
+               },
+               "z": 2,
+               "parent": "eb3c9d58-28da-42b4-b9f1-fd1ac7620549",
+               "embeds": [
+                   "1b59aefc-bf93-47f6-bbe9-62f07430f840"
+               ],
+               "dependson": [
+                   "eb3c9d58-28da-42b4-b9f1-fd1ac7620549"
+               ]
+           },
+           "e57442c6-bbe7-41f6-973c-75d671c3fa67": {
+               "source": {
+                   "id": "c6636580-cd4c-478f-94aa-3643264519cc"
+               },
+               "target": {
+                   "id": "f2978eb2-9d1a-4344-8675-8f8465de44a8"
+               },
+               "z": 2
+           },
+           "1b59aefc-bf93-47f6-bbe9-62f07430f840": {
+               "size": {
+                   "width": 60,
+                   "height": 60
+               },
+               "position": {
+                   "x": 120,
+                   "y": 210
+               },
+               "z": 3,
+               "parent": "c6636580-cd4c-478f-94aa-3643264519cc",
+               "embeds": [],
+               "dependson": [
+                   "c6636580-cd4c-478f-94aa-3643264519cc",
+                   "fdeab7e9-ae4d-4f64-a5f3-d8d26cb3369d"
+               ]
+           },
+           "0c2ec461-1b48-44d2-8b13-f43692e04216": {
+               "source": {
+                   "id": "eb3c9d58-28da-42b4-b9f1-fd1ac7620549"
+               },
+               "target": {
+                   "id": "fdeab7e9-ae4d-4f64-a5f3-d8d26cb3369d"
+               },
+               "z": 1
+           }
+       }
+   }
+}

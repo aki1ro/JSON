@@ -1,0 +1,16 @@
+{
+    "Policy": {
+        "PolicyName": "lab_policy",
+        "PolicyId": "ANPAW2B7FI2MYCWYLVV4J",
+        "Arn": "arn:aws:iam::468283901593:policy/lab_policy",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 1,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2021-06-18T07:56:05+00:00",
+        "UpdateDate": "2021-06-18T07:56:05+00:00",
+        "Tags": []
+    }
+}
+
